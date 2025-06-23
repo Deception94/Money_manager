@@ -1,4 +1,4 @@
-import os 
+import os
 import json
 import base64
 from flask import Flask, render_template, request, redirect, url_for, Response, session, flash
@@ -9,9 +9,12 @@ import csv
 import io
 
 app = Flask(__name__)
-app.secret_key = 'YOUR_GENERATED_SECRET_KEY_HERE' # IMPORTANT: Change this to a strong, random key in production!
+# IMPORTANT: Change this to a strong, random key in production!
+# You can generate one with `import os; print(os.urandom(24).hex())` in Python
+app.secret_key = '2e61bb2576fe789a5f315b3bf4d26eb6e358c1820a3abe14'
 
 # --- Firebase Initialization ---
+# Ensure the Firebase app is initialized only once
 if not firebase_admin._apps:
     # Try to get credentials from environment variable for deployment
     service_account_key_base64 = os.environ.get('SERVICE_ACCOUNT_KEY_BASE64')
@@ -24,9 +27,11 @@ if not firebase_admin._apps:
         except (json.JSONDecodeError, base64.binascii.Error) as e:
             print(f"Error decoding service account key from environment: {e}")
             # Fallback to ApplicationDefault if decoding fails (e.g., malformed env var)
+            # This might cause issues if serviceAccountKey.json is truly gone and no GOOGLE_APPLICATION_CREDENTIALS set
             cred = credentials.ApplicationDefault()
     else:
         # Fallback for local development using GOOGLE_APPLICATION_CREDENTIALS or default ADC
+        # This requires you to have GOOGLE_APPLICATION_CREDENTIALS env var pointing to your local key
         cred = credentials.ApplicationDefault()
 
     firebase_admin.initialize_app(cred)
@@ -45,7 +50,7 @@ CATEGORIES = [
 INCOME_CATEGORIES = ["Salary", "Freelance Income", "Investments", "Savings"]
 
 # --- Authentication Decorator ---
-# This decorator protects routes, redirecting unauthenticated users to login
+# This decorator will protect routes, redirecting unauthenticated users to login
 def login_required(f):
     from functools import wraps
     @wraps(f)
@@ -90,6 +95,7 @@ def index():
             pass
 
     # Order by date - crucial for efficient Firestore queries with range filters
+    # This query combination (userId, category, date, __name__) requires a composite index
     transactions_query = transactions_query.order_by('date', direction=firestore.Query.DESCENDING)
 
     transactions = []
@@ -155,6 +161,8 @@ def signup():
             flash('Account created successfully! Please log in.', 'success')
             return redirect(url_for('login'))
         except Exception as e:
+            # Firebase Admin SDK errors might need parsing to be user-friendly
+            # e.g., auth/email-already-exists, auth/weak-password
             error_message = str(e)
             if 'EMAIL_ALREADY_EXISTS' in error_message:
                 flash('That email is already in use. Please log in or use a different email.', 'danger')
@@ -344,4 +352,8 @@ def export_csv():
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    # Get the port from the environment variable, default to 8080 if not set (Cloud Run sets it)
+    port = int(os.environ.get("PORT", 8080))
+    # Run the app, listening on all public IPs (0.0.0.0) and the specified port
+    # Set debug=False for production!
+    app.run(host="0.0.0.0", port=port, debug=False)
