@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In{% endblock %}
+
+{% block head_extra %}
+<style>
+    body { /* These styles will override or supplement base.html body styles for this page */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #e9ecef; /* Slightly different background for auth pages */
+    }
+    .container { /* The main content container from base.html will be used here */
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Stronger shadow for auth forms */
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        margin: auto; /* Override base container margin for centering */
+    }
+    h1 {
+        color: #333;
+        margin-bottom: 25px; /* Increased margin */
+        margin-top: 0; /* Remove default h1 top margin */
+    }
+    label {
+        display: block;
+        text-align: left;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+    }
+    input[type="email"], input[type="password"] {
+        width: calc(100% - 22px); /* Adjust for padding and border */
+        padding: 11px; /* Increased padding */
+        margin-bottom: 20px; /* Increased margin */
+        border: 1px solid #ced4da; /* Lighter border */
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+    }
+    button {
+        background-color: #007BFF;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.1em;
+        width: 100%;
+        margin-top: 15px; /* Increased margin */
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .link {
+        display: block;
+        margin-top: 25px; /* Increased margin */
+        color: #28a745;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1em;
+    }
+    .link:hover {
+        text-decoration: underline;
+    }
+
+    /* Override base flash message styles if needed, or rely on base.html */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container"> {# This container is now nested inside base.html's container #}
+    <h1>Log In</h1>
+
+    <form method="POST" action="/login">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ email if email else '' }}" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Log In</button>
+    </form>
+    <a href="/signup" class="link">Don't have an account? Sign Up</a>
+</div>
+{% endblock %}

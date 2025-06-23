@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // THIS IS THE IMPORTANT LINE: allow read, write if true;
+    // WARNING: This rule allows anyone to read and write data to your database.
+    // It is CRITICAL to replace this with proper authentication and authorization rules
+    // before deploying a real application to production.
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

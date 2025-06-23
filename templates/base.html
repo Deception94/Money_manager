@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Money Manager{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            background-color: #007bff;
+            padding: 15px 0;
+            color: white;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        nav .app-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        nav ul li {
+            margin-left: 25px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 0;
+            transition: color 0.3s ease;
+        }
+        nav ul li a:hover {
+            color: #e2e6ea;
+        }
+
+        /* Flash Messages Styling */
+        .flash-messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 1200px;
+        }
+        .flash-messages li {
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 1em;
+            opacity: 0.95;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .flash-messages li:hover {
+            opacity: 1;
+        }
+        .flash-messages .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash-messages .danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .flash-messages .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .flash-messages .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+        /* Basic Button Styles (can be overridden by specific page styles) */
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button-primary {
+            background-color: #007bff;
+            color: white;
+            border: 1px solid #007bff;
+        }
+        .button-primary:hover {
+            background-color: #0056b3;
+        }
+        .button-success {
+            background-color: #28a745;
+            color: white;
+            border: 1px solid #28a745;
+        }
+        .button-success:hover {
+            background-color: #218838;
+        }
+        .button-danger {
+            background-color: #dc3545;
+            color: white;
+            border: 1px solid #dc3545;
+        }
+        .button-danger:hover {
+            background-color: #c82333;
+        }
+    </style>
+    {% block head_extra %}{% endblock %} {# For page-specific CSS/JS in head #}
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="app-title">Money Manager</a>
+            <ul>
+                {% if session.user_id %}
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/add">Add Transaction</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/signup">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    {# Flash Messages Display #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-messages">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        {% block content %}{% endblock %} {# This is where child templates will inject their content #}
+    </div>
+
+    {# Footer (Optional, can add later) #}
+    {% block scripts_extra %}{% endblock %} {# For page-specific JS at the end of body #}
+</body>
+</html>

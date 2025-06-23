@@ -1,0 +1,13 @@
+# Python virtual environment
+venv/
+.venv/
+
+# Firebase service account key (important for security!)
+*.json # This is a general rule, ensure serviceAccountKey.json is *not* in your project folder
+
+# Pyc files
+__pycache__/
+*.pyc
+
+# Environment variables files (if you used .env locally)
+.env

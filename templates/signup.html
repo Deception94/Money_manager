@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block head_extra %}
+<style>
+    body { /* These styles will override or supplement base.html body styles for this page */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #e9ecef; /* Consistent background for auth pages */
+    }
+    .container { /* The main content container from base.html will be used here */
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Stronger shadow for auth forms */
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        margin: auto; /* Override base container margin for centering */
+    }
+    h1 {
+        color: #333;
+        margin-bottom: 25px;
+        margin-top: 0;
+    }
+    label {
+        display: block;
+        text-align: left;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+    }
+    input[type="email"], input[type="password"] {
+        width: calc(100% - 22px);
+        padding: 11px;
+        margin-bottom: 20px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1em;
+    }
+    button {
+        background-color: #28a745; /* Green for signup */
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.1em;
+        width: 100%;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #218838;
+    }
+    .link {
+        display: block;
+        margin-top: 25px;
+        color: #007BFF; /* Blue for login link */
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1em;
+    }
+    .link:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Sign Up</h1>
+
+    <form method="POST" action="/signup">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ email if email else '' }}" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Sign Up</button>
+    </form>
+    <a href="/login" class="link">Already have an account? Log In</a>
+</div>
+{% endblock %}

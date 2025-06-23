@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Transaction{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Add specific styles for the add/edit forms here */
+    form {
+        background-color: #f9f9f9;
+        padding: 30px; /* Increased padding */
+        border-radius: 8px;
+        max-width: 500px; /* Slightly wider form */
+        margin: 20px auto; /* Centered */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Subtle shadow */
+    }
+    h1 { color: #333; margin-top: 0; text-align: center; margin-bottom: 30px; }
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+    }
+    input[type="number"],
+    input[type="text"],
+    input[type="date"],
+    select {
+        width: calc(100% - 22px); /* Adjust for padding and border */
+        padding: 11px; /* Increased padding */
+        margin-bottom: 20px; /* Increased margin */
+        border: 1px solid #ced4da; /* Lighter border */
+        border-radius: 4px;
+        box-sizing: border-box; /* Include padding in width */
+        font-size: 1em;
+    }
+    button {
+        background-color: #28a745;
+        color: white;
+        padding: 12px 20px; /* Larger buttons */
+        border: none;
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer;
+        font-size: 1.1em;
+        width: 100%; /* Full width button */
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #218838;
+    }
+    .back-link {
+        display: block;
+        margin-top: 25px; /* Increased margin */
+        text-align: center;
+        color: #007BFF;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .back-link:hover {
+        text-decoration: underline;
+    }
+    #otherCategoryInput {
+        margin-top: 5px; /* Adjust spacing when shown */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Add New Transaction</h1>
+<form method="POST" action="/add">
+    <label for="amount">Amount (₹):</label>
+    <input type="number" id="amount" name="amount" step="0.01" required>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required>
+
+    <label for="categoryDropdown">Category:</label>
+    <select id="categoryDropdown" name="category" required onchange="checkCategory()">
+        <option value="">--Select a Category--</option>
+        {% for category in categories %}
+            <option value="{{ category }}">{{ category }}</option>
+        {% endfor %}
+        <option value="Other">Other</option>
+    </select>
+    <input type="text" id="otherCategoryInput" name="other_category" placeholder="Enter custom category" style="display: none; margin-top: 10px;">
+
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" value="{{ today }}" required>
+
+    <button type="submit">Add Transaction</button>
+</form>
+<a href="/" class="back-link">Back to Home</a>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    // Set today's date as default for the date input
+    document.addEventListener('DOMContentLoaded', function() {
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        today = yyyy + '-' + mm + '-' + dd;
+        document.getElementById('date').value = today;
+
+        // Initialize category display on page load
+        checkCategory();
+    });
+
+    function checkCategory() {
+        var dropdown = document.getElementById("categoryDropdown");
+        var otherInput = document.getElementById("otherCategoryInput");
+
+        if (dropdown.value === "Other") {
+            otherInput.style.display = "block";
+            otherInput.required = true;
+            dropdown.removeAttribute("name"); // Remove name from dropdown so it's not sent
+            otherInput.setAttribute("name", "category"); // Assign name to custom input
+        } else {
+            otherInput.style.display = "none";
+            otherInput.required = false;
+            otherInput.removeAttribute("name"); // Remove name from custom input
+            dropdown.setAttribute("name", "category"); // Assign name back to dropdown
+        }
+    }
+</script>
+{% endblock %}

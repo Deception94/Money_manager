@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Transaction{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Specific styles for the edit form */
+    form {
+        background-color: #f9f9f9;
+        padding: 30px; /* Increased padding */
+        border-radius: 8px;
+        max-width: 500px; /* Slightly wider form */
+        margin: 20px auto; /* Centered */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Subtle shadow */
+    }
+    h1 { color: #333; margin-top: 0; text-align: center; margin-bottom: 30px; }
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+    }
+    input[type="number"],
+    input[type="text"],
+    input[type="date"],
+    select {
+        width: calc(100% - 22px); /* Adjust for padding and border */
+        padding: 11px; /* Increased padding */
+        margin-bottom: 20px; /* Increased margin */
+        border: 1px solid #ced4da; /* Lighter border */
+        border-radius: 4px;
+        box-sizing: border-box; /* Include padding in width */
+        font-size: 1em;
+    }
+    button {
+        background-color: #007BFF; /* Primary color for update */
+        color: white;
+        padding: 12px 20px; /* Larger buttons */
+        border: none;
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer;
+        font-size: 1.1em;
+        width: 100%; /* Full width button */
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .back-link {
+        display: block;
+        margin-top: 25px; /* Increased margin */
+        text-align: center;
+        color: #007BFF;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .back-link:hover {
+        text-decoration: underline;
+    }
+    #otherCategoryInput {
+        margin-top: 5px; /* Adjust spacing when shown */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Edit Transaction</h1>
+{# Form action points to the specific transaction's ID #}
+<form method="POST" action="/edit/{{ transaction_id }}">
+    <label for="amount">Amount (₹):</label>
+    <input type="number" id="amount" name="amount" step="0.01" value="{{ transaction.amount }}" required>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" value="{{ transaction.description }}" required>
+
+    {# Category Dropdown with "Other" option and dynamic input #}
+    <label for="categoryDropdown">Category:</label>
+    <select id="categoryDropdown" name="category" required onchange="checkCategoryEdit()">
+        <option value="">--Select a Category--</option>
+        {% set is_custom_category = true %}
+        {% for category in categories %}
+            <option value="{{ category }}" {% if category == transaction.category %}selected{% set is_custom_category = false %}{% endif %}>{{ category }}</option>
+        {% endfor %}
+        <option value="Other" {% if is_custom_category and transaction.category not in categories %}selected{% endif %}>Other</option>
+    </select>
+    {# This input will be shown when "Other" is selected or if existing category is custom #}
+    <input type="text" id="otherCategoryInput" name="other_category" placeholder="Enter custom category"
+           style="display: none; margin-top: 10px;"
+           value="{{ transaction.category if is_custom_category and transaction.category not in categories else '' }}">
+
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" value="{{ transaction.date }}" required>
+
+    <button type="submit">Update Transaction</button>
+</form>
+<a href="/" class="back-link">Back to Home</a>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    function checkCategoryEdit() {
+        var dropdown = document.getElementById("categoryDropdown");
+        var otherInput = document.getElementById("otherCategoryInput");
+
+        if (dropdown.value === "Other") {
+            otherInput.style.display = "block";
+            otherInput.required = true;
+            dropdown.removeAttribute("name");
+            otherInput.setAttribute("name", "category");
+        } else {
+            otherInput.style.display = "none";
+            otherInput.required = false;
+            otherInput.removeAttribute("name");
+            dropdown.setAttribute("name", "category");
+        }
+    }
+
+    // --- Initial setup when the page loads ---
+    document.addEventListener('DOMContentLoaded', function() {
+        var dropdown = document.getElementById("categoryDropdown");
+        var otherInput = document.getElementById("otherCategoryInput");
+        var currentCategory = "{{ transaction.category }}";
+
+        var predefinedCategories = [{% for category in categories %}"{{ category }}"{% if not loop.last %},{% endif %}{% endfor %}];
+        var isPredefined = predefinedCategories.includes(currentCategory);
+
+        if (!isPredefined && currentCategory !== "") {
+            dropdown.value = "Other";
+            otherInput.style.display = "block";
+            otherInput.required = true;
+            otherInput.value = currentCategory;
+            dropdown.removeAttribute("name");
+            otherInput.setAttribute("name", "category");
+        } else if (currentCategory === "") {
+             // If no category is set (e.g., brand new transaction being edited, though unlikely with required fields)
+             dropdown.value = "";
+             otherInput.style.display = "none";
+             otherInput.required = false;
+             otherInput.removeAttribute("name");
+             dropdown.setAttribute("name", "category");
+        } else {
+            // If a predefined category is selected
+            otherInput.style.display = "none";
+            otherInput.required = false;
+            otherInput.removeAttribute("name");
+            dropdown.setAttribute("name", "category");
+        }
+        // Call this function to ensure correct state after initial load
+        checkCategoryEdit();
+    });
+</script>
+{% endblock %}
