@@ -1,5 +1,8 @@
 # Money Manager: Personal Finance Tracker
 
+**Developed by: [Tanmay Chetan Mahajan]**
+**Student ID: [23104B0021]**
+
 ## Project Overview
 
 A user-friendly personal finance tracking web application built with Flask, Firebase, and Google Cloud Platform. This application allows users to securely manage their income and expenses, categorize transactions, visualize spending patterns, and export data for personal financial analysis.
